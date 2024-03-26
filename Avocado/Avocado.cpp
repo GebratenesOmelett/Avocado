@@ -99,37 +99,33 @@ public:
         space[ludzik.y[0]][ludzik.x] = ' ';
         space[ludzik.y[1]][ludzik.x] = ' ';
         space[ludzik.y[2]][ludzik.x] = ' ';
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (space[i][j] == '#') {
+                    space[i][j] = ' ';
+                }
+            }
+        }
     };
 
-    //void moveTable(){
-    //    char* tmpTab;
-    //    tmpTab = [];
-    //    strcpy_s(tmpTab[N],sizeof(space[0]) , space[0]);
+    void moveTable() {
+        char temp[N];
 
-    //    for(int i= N - 1; i > 0; i--){
-    //        space[i] = space[i-1];
-    //    }
-    //    strcpy_s(space[N - 1], sizeof(tmpTab), tmpTab);
-    //    //space[N - 1] = tmpTab;
-    //    
-    //};
-    //void moveTable() {
-    //char* tmpTab = (char*)malloc(sizeof(space[0])); // Rzutowanie typu na char*
-    //if (tmpTab == NULL) {
-    //    // Obsługa błędu alokacji pamięci
-    //    return;
-    //}
+        for (int j = 0; j < N; ++j) {
+            temp[j] = space[N - 1][j];
+        }
 
-    //strcpy_s(tmpTab, sizeof(space[0]), space[0]);
+        for (int i = N - 1; i > 0; --i) {
+            for (int j = 0; j < N; ++j) {
+                space[i][j] = space[i - 1][j];
+            }
+        }
 
-    //for (int i = N - 1; i > 0; i--) {
-    //    strcpy_s(space[i], sizeof(space[i]), space[i - 1]);
-    //}
+        for (int j = 0; j < N; ++j) {
+            space[0][j] = temp[j];
+        }
+    };
 
-    //strcpy_s(space[N - 1], sizeof(space[N - 1]), tmpTab);
-
-    //free(tmpTab); // Zwolnienie pamięci po użyciu
-//}
 
 };
 
@@ -138,22 +134,15 @@ class Movement {
 
 public:
     Movement() {};
-    void getMove(int c, Ludzik &ludzik) {
-        switch ((c)) {
-        case KEY_UP:
-            //std::cout << std::endl << "UP" << std::endl;  // key left
-            break;
-        case KEY_LEFT:
+    void getMove(Ludzik &ludzik) {
+        if (GetKeyState(VK_LEFT) & 0x8000) {
             ludzik.goLeft();
-            break;
-        case KEY_RIGHT:
+        }
+        if (GetKeyState(VK_RIGHT) & 0x8000) {
             ludzik.goRight();
-            break;
-        default:
-            //std::cout << std::endl << "null" << std::endl;  // not arrow
-            break;
         }
     }
+
 
 };
 
@@ -169,11 +158,12 @@ int main()
     while (1) {
         player.ludzikPrintPoints();
         space.printTable();
-        c = _getch();
+        space.moveTable();
+        //c = _getch();
         prev = player;
-        movement.getMove(c, player);
+        movement.getMove(player);
         space.addedP(player);
-        Sleep(100);//ms
+        //Sleep(100);//ms
         space.setSpace(prev);
         space.setLudzik(player);
         system("cls");
